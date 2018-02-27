@@ -1,0 +1,4 @@
+// To declare projects as part of a multi-project build use the 'include' method
+include 'app'
+include 'aula01'
+include 'aula03-weather-api'
