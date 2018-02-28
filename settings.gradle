@@ -1,0 +1,6 @@
+// To declare projects as part of a multi-project build use the 'include' method
+
+include 'app'
+include 'aula03-gradle-demo'
+
+rootProject.name = 'mpd2018aulas'
