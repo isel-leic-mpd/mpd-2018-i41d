@@ -2,5 +2,6 @@
 
 include 'app'
 include 'aula03-gradle-demo'
+include 'aula03-weather-api'
 
 rootProject.name = 'mpd2018aulas'
