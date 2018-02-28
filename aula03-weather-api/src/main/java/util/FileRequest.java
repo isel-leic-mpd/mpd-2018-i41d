@@ -38,7 +38,7 @@ public class FileRequest implements IRequest{
                 .replace('=', '-')
                 .replace(',', '-')
                 .substring(0,68);
-        System.out.println(path);
+        // System.out.println(path);
         ArrayList<String> res = new ArrayList<>();
         try(InputStream in = ClassLoader.getSystemResource(path).openStream()) {
             /*

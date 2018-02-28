@@ -39,7 +39,7 @@ import java.util.List;
 public class WeatherWebApi {
 
     private static final String WEATHER_TOKEN;
-    private static final String WEATHER_HOST = "http://data.worldweatheronline.com";
+    private static final String WEATHER_HOST = "http://api.worldweatheronline.com";
     private static final String WEATHER_PAST = "/premium/v1/past-weather.ashx";
     private static final String WEATHER_PAST_ARGS =
             "?q=%s&date=%s&enddate=%s&tp=24&format=csv&key=%s";
@@ -70,7 +70,7 @@ public class WeatherWebApi {
     }
 
     /**
-     * E.g. http://api.worldweatheronline.com/free/v2/search.ashx?query=oporto&format=tab&key=*****
+     * E.g. http://api.worldweatheronline.com/premium/v1/search.ashx?query=oporto&format=tab&key=*****
      */
 
     public Iterable<Location> search(String query) {
@@ -86,7 +86,7 @@ public class WeatherWebApi {
     }
 
     /**
-     * E.g. http://api.worldweatheronline.com/free/v2/search.ashx?query=oporto&format=tab&key=*****
+     * E.g. http://api.worldweatheronline.com/premium/v1/past-weather.ashx?q=41.15,-8.6167&date=2017-02-01&enddate=2017-04-30&tp=24&format=csv&key=*********
      */
     public Iterable<WeatherInfo> pastWeather(
             double lat,
