@@ -3,6 +3,7 @@ build/
 
 # Ignore InteliJ metadata
 .idea
+*.iml
 
 # Ignore Gradle GUI config
 gradle-app.setting
