@@ -33,6 +33,7 @@ import java.util.List;
 public class HttpRequest implements IRequest {
     @Override
     public Iterable<String> getContent(String path) {
+        System.out.println(path);
         List<String> res = new ArrayList<>();
         try (InputStream in = new URL(path).openStream()) {
             /*
