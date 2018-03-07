@@ -1,4 +1,4 @@
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import util.FileRequest;
 import util.HttpRequest;
 import weather.WeatherWebApi;
@@ -7,7 +7,7 @@ import weather.dto.WeatherInfo;
 import java.time.LocalDate;
 
 import static java.time.LocalDate.of;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QueriesTest {
     @Test public void testSomeThing() {

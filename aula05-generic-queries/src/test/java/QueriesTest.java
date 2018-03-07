@@ -1,4 +1,4 @@
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import util.FileRequest;
 import util.Queries;
 import weather.WeatherWebApi;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.time.LocalDate.of;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static util.Queries.count;
 import static util.Queries.filter;
 import static util.Queries.map;

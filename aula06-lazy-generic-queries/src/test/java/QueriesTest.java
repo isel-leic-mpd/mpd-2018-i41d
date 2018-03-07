@@ -1,4 +1,4 @@
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import util.FileRequest;
 import util.Queries;
 import weather.WeatherWebApi;
@@ -8,7 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.time.LocalDate.of;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static util.Queries.count;
 import static util.Queries.filter;
 import static util.Queries.forEach;
@@ -63,7 +64,7 @@ public class QueriesTest {
         Iterable<WeatherInfo> cloudy = filter(past, w -> w.getDescription().contains("cloud"));
         Iterable<Integer> temps = map(cloudy, WeatherInfo::getTempC);
         List<Integer> expected = Arrays.asList(14, 15, 17, 25, 16, 19, 25, 24, 22, 18);
-        assertEquals(expected, temps);
+        assertIterableEquals(expected, temps);
     }
 
     @Test
