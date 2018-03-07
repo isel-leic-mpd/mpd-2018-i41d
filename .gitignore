@@ -5,6 +5,10 @@ build/
 .idea
 *.iml
 
+# Ignore InteliJ build folder
+
+out/
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
