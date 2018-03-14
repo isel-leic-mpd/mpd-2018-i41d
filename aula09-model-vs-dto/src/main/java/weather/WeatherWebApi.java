@@ -18,9 +18,8 @@
 package weather;
 
 import util.IRequest;
-import util.Queries;
-import weather.dto.Location;
-import weather.dto.WeatherInfo;
+import weather.dto.LocationDto;
+import weather.dto.WeatherInfoDto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,10 +28,6 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Predicate;
 
 import static util.Queries.filter;
 import static util.Queries.map;
@@ -42,7 +37,7 @@ import static util.Queries.skip;
  * @author Miguel Gamboa
  *         created on 07-03-2017
  */
-public class WeatherWebApi {
+class WeatherWebApi {
 
     private static final String WEATHER_TOKEN;
     private static final String WEATHER_HOST = "http://api.worldweatheronline.com";
@@ -79,21 +74,21 @@ public class WeatherWebApi {
      * E.g. http://api.worldweatheronline.com/premium/v1/search.ashx?query=oporto&format=tab&key=*****
      */
 
-    public Iterable<Location> search(String query) {
+    public Iterable<LocationDto> search(String query) {
         String url=WEATHER_HOST + WEATHER_SEARCH + WEATHER_SEARCH_ARGS;
         url = String.format(url, query, WEATHER_TOKEN);
         return map(
                 filter(
                         req.getContent(url),
                         l -> !l.startsWith("#")),
-                Location::valueOf);
+                LocationDto::valueOf);
 
         /*
-        List<Location> locations= new ArrayList<>();
+        List<LocationDto> locations= new ArrayList<>();
         Iterator<String> iteratorString= req.getContent(url).iterator();
         while(iteratorString.hasNext()) {
             String line = iteratorString.next();
-            if(!line.startsWith("#")) locations.add(Location.valueOf(line));
+            if(!line.startsWith("#")) locations.add(LocationDto.valueOf(line));
         }
         return locations;
         */
@@ -102,7 +97,7 @@ public class WeatherWebApi {
     /**
      * E.g. http://api.worldweatheronline.com/premium/v1/past-weather.ashx?q=41.15,-8.6167&date=2017-02-01&enddate=2017-04-30&tp=24&format=csv&key=*********
      */
-    public Iterable<WeatherInfo> pastWeather(
+    public Iterable<WeatherInfoDto> pastWeather(
             double lat,
             double log,
             LocalDate from,
@@ -119,13 +114,13 @@ public class WeatherWebApi {
                         filter(src, w -> !w.startsWith("#")), // Filter comments
                         1),  // Skip line: Not Available
                     l -> isEven[0] = !isEven[0]), // Filter Even lines
-                WeatherInfo::valueOf); // Map to WeatherInfo objects
+                WeatherInfoDto::valueOf); // Map to WeatherInfoDto objects
         /*
         while(iter.next().startsWith("#")) { }
         iter.next(); // Skip line: Not Available
         while(iter.hasNext()) {
             String line = iter.next(); // Skip Daily Info
-            res.add(WeatherInfo.valueOf(line));
+            res.add(WeatherInfoDto.valueOf(line));
             if(iter.hasNext()) iter.next();
         }
         return res;

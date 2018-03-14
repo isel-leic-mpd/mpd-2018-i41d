@@ -20,20 +20,25 @@ package util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.net.URL;
+import java.util.Iterator;
 
 /**
  * @author Miguel Gamboa
  *         created on 08-03-2017
  */
-public class HttpRequest extends AbstractRequest{
+public abstract class AbstractRequest implements IRequest{
+    /**
+     * Template Method.
+     * Delegates on Hook Method the changeable part of the algorithm.
+     * This one is final and cannot be modified.
+     */
     @Override
-    public InputStream openStream(String path) {
-        try{
-            System.out.println("HTTP Get request...");
-            return new URL(path).openStream();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    public final Iterable<String> getContent(String uri) {
+        return () -> new InputStreamLineIterator(() -> openStream(uri));
     }
+
+    /**
+     * Hook Method.
+     */
+    abstract InputStream openStream(String path);
 }

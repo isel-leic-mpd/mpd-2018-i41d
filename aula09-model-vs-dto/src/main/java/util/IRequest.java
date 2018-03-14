@@ -15,25 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package util;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.net.URL;
-
-/**
+package util;/**
  * @author Miguel Gamboa
  *         created on 08-03-2017
  */
-public class HttpRequest extends AbstractRequest{
-    @Override
-    public InputStream openStream(String path) {
-        try{
-            System.out.println("HTTP Get request...");
-            return new URL(path).openStream();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
+public interface IRequest {
+    Iterable<String> getContent(String path);
 }
