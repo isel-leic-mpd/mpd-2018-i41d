@@ -40,6 +40,14 @@ public class Location {
         this.pastWeather = pastWeather;
     }
 
+    public Location() {
+        this.country = null;
+        this.region = null;
+        this.latitude = 0;
+        this.longitude = 0;
+        this.pastWeather = (from, to) -> { throw new UnsupportedOperationException(); };
+    }
+
     public String getCountry() {
         return country;
     }

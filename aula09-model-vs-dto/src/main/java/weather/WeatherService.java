@@ -33,7 +33,7 @@ public class WeatherService {
 
     public Iterable<Location> search(String query) {
         Iterable<LocationDto> locals = api.search(query);
-        return Queries.map(locals, this::dtoToLocation);
+        return Queries.map(locals, dto -> new Location());
     }
 
 
@@ -44,16 +44,5 @@ public class WeatherService {
                 dto.getDescription(),
                 dto.getPrecipMM(),
                 dto.getFeelsLikeC());
-    }
-
-    private  Location dtoToLocation(LocationDto dto) {
-        double lat = dto.getLatitude();
-        double log = dto.getLongitude();
-        return new Location(
-                dto.getCountry(),
-                dto.getRegion(),
-                lat,
-                log,
-                (from, to) -> { throw new UnsupportedOperationException(); });
     }
 }
