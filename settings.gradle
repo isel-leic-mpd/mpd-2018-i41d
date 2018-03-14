@@ -7,5 +7,6 @@ include 'aula04-naive-queries'
 include 'aula05-generic-queries'
 include 'aula06-lazy-generic-queries'
 include 'aula07-lazy'
+include 'aula08-autocloseable'
 
 rootProject.name = 'mpd2018aulas'
