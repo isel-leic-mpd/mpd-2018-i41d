@@ -1,11 +1,10 @@
 import org.junit.jupiter.api.Test;
 import util.FileRequest;
 import util.Queries;
-import weather.WeatherWebApi;
-import weather.dto.Location;
-import weather.dto.WeatherInfo;
+import weather.WeatherService;
+import weather.dto.WeatherInfoDto;
+import weather.model.WeatherInfo;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -25,14 +24,17 @@ public class QueriesTest {
     @Test
     public void testSomeThing() {
         // WeatherWebApi weather = new WeatherWebApi(new HttpRequest());
-        WeatherWebApi weather = new WeatherWebApi(new FileRequest());
+        WeatherService weather = new WeatherService(new FileRequest());
         Iterable<WeatherInfo> past = weather
-                .pastWeather(41.15, -8.6167, of(2017, 2, 1), of(2017, 4, 30));
+                .search("Oporto")
+                .iterator()
+                .next()
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
 
-        // for(Iterator<WeatherInfo> iter = past.iteratosr(); iter.hasNext(); )
+        // for(Iterator<WeatherInfoDto> iter = past.iteratosr(); iter.hasNext(); )
         //     System.out.println(iter.next());
         //
-        // <=>  for (WeatherInfo w : past) { System.out.println(w); }
+        // <=>  for (WeatherInfoDto w : past) { System.out.println(w); }
         // <=>
         Queries.forEach(past, System.out::println);
 
@@ -48,9 +50,12 @@ public class QueriesTest {
 
     @Test
     public void testFilter() {
-        WeatherWebApi weather = new WeatherWebApi(new FileRequest());
+        WeatherService weather = new WeatherService(new FileRequest());
         Iterable<WeatherInfo> past = weather
-                .pastWeather(41.15, -8.6167, of(2017, 2, 1), of(2017, 4, 30));
+                .search("Oporto")
+                .iterator()
+                .next()
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
         assertEquals(31, count(filter(past, w -> w.getDescription().contains("Sunny"))));
         assertEquals(37, count(filter(past, w -> w.getDescription().contains("rain"))));
         assertEquals(10, count(filter(past, w -> w.getDescription().contains("cloud"))));
@@ -73,9 +78,12 @@ public class QueriesTest {
 
     @Test
     public void testMap() {
-        WeatherWebApi weather = new WeatherWebApi(new FileRequest());
+        WeatherService weather = new WeatherService(new FileRequest());
         Iterable<WeatherInfo> past = weather
-                .pastWeather(41.15, -8.6167, of(2017, 2, 1), of(2017, 4, 30));
+                .search("Oporto")
+                .iterator()
+                .next()
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
         Iterable<WeatherInfo> cloudy = filter(past, w -> {
             System.out.println("Filtering .... " + w);
             return w.getDescription().contains("cloud");
@@ -90,11 +98,12 @@ public class QueriesTest {
 
     @Test
     public void testReduceMax() {
-        WeatherWebApi weather = new WeatherWebApi(new FileRequest());
-        Iterable<Location> portoCities = weather.search("Oporto");
-        Location porto = portoCities.iterator().next();
+        WeatherService weather = new WeatherService(new FileRequest());
         Iterable<WeatherInfo> past = weather
-                .pastWeather(porto.getLatitude(), porto.getLongitude(), of(2017, 2, 1), of(2017, 4, 30));
+                .search("Oporto")
+                .iterator()
+                .next()
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
         Iterable<WeatherInfo> cloudy = filter(past, w -> w.getDescription().contains("cloud"));
         int max = reduce(
                 cloudy,
@@ -105,9 +114,12 @@ public class QueriesTest {
 
     @Test
     public void testReduceCount() {
-        WeatherWebApi weather = new WeatherWebApi(new FileRequest());
+        WeatherService weather = new WeatherService(new FileRequest());
         Iterable<WeatherInfo> past = weather
-                .pastWeather(41.15, -8.6167, of(2017, 2, 1), of(2017, 4, 30));
+                .search("Oporto")
+                .iterator()
+                .next()
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
         int size = reduce(past,0, (prev, w) -> ++prev);
         assertEquals(89, size);
     }

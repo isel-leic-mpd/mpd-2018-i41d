@@ -9,5 +9,6 @@ include 'aula06-lazy-generic-queries'
 include 'aula07-lazy'
 include 'aula08-autocloseable'
 include 'aula09-model-vs-dto'
+include 'aula10-composition'
 
 rootProject.name = 'mpd2018aulas'
