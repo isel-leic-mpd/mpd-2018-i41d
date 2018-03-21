@@ -9,8 +9,10 @@ import util.iterator.Limiter;
 import util.iterator.MapIterator;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -175,5 +177,19 @@ public class Queries {
             res.add(item);
         }
         return res.toArray();
+    }
+    /**
+     * Returns the maximum element of the src Iterable according
+     * to the provided Comparator.
+     */
+    public static <T> Optional<T> max(Iterable<T> src, Comparator<T> cmp) {
+        Optional<T> res = Optional.empty();
+        for (T item : src) {
+            if(res.isPresent() == false)
+                res = Optional.of(item);
+            else if(cmp.compare(item, res.get()) > 0)
+                res = Optional.of(item);
+        }
+        return res;
     }
 }
