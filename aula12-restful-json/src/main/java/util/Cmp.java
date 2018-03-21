@@ -17,7 +17,7 @@ public class Cmp {
             return r1.compareTo(r2);
         };
         */ // <=>
-        return new QueriesCmp(prop);
+        return new QueriesCmp<>(prop);
     }
 
     public static class QueriesCmp<T, R extends Comparable<R>> implements Comparator<T> {
@@ -34,8 +34,8 @@ public class Cmp {
             return r1.compareTo(r2);
         }
 
-        public <U extends Comparable<U>> Comparator<T> thenBy(Function<T, U> prop2) {
-            return (o1, o2) -> 0;
+        public <U extends Comparable<U>> QueriesCmp<T, U> thenBy(Function<T, U> prop2) {
+            throw new UnsupportedOperationException();
         }
     }
 }
