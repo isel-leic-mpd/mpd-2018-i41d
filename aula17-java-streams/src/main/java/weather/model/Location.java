@@ -19,6 +19,7 @@ package weather.model;
 
 import java.time.LocalDate;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 /**
  * @author Miguel Gamboa
@@ -29,10 +30,10 @@ public class Location {
     private final String region;
     private final double latitude;
     private final double longitude;
-    private final BiFunction<LocalDate, LocalDate, Iterable<WeatherInfo>> pastWeather;
+    private final BiFunction<LocalDate, LocalDate, Stream<WeatherInfo>> pastWeather;
 
 
-    public Location(String country, String region, double latitude, double longitude, BiFunction<LocalDate, LocalDate, Iterable<WeatherInfo>> pastWeather) {
+    public Location(String country, String region, double latitude, double longitude, BiFunction<LocalDate, LocalDate, Stream<WeatherInfo>> pastWeather) {
         this.country = country;
         this.region = region;
         this.latitude = latitude;
@@ -64,11 +65,11 @@ public class Location {
         return longitude;
     }
 
-    public Iterable<WeatherInfo> pastWeather(LocalDate from, LocalDate to) {
+    public Stream<WeatherInfo> pastWeather(LocalDate from, LocalDate to) {
         return pastWeather.apply(from, to);
     }
 
-    public Iterable<WeatherInfo> past30DaysWeather() {
+    public Stream<WeatherInfo> past30DaysWeather() {
         LocalDate now = LocalDate.now();
         return pastWeather.apply(now.minusDays(30), now);
     }

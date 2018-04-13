@@ -17,9 +17,10 @@
 
 package util;
 
-import util.iterator.InputStreamLineIterator;
-
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.stream.Stream;
 
 /**
  * @author Miguel Gamboa
@@ -32,8 +33,10 @@ public abstract class AbstractRequest implements IRequest{
      * This one is final and cannot be modified.
      */
     @Override
-    public final Iterable<String> getContent(String uri) {
-        return () -> new InputStreamLineIterator(() -> openStream(uri));
+    public final Stream<String> getContent(String uri) {
+        InputStream data = openStream(uri);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(data));
+        return reader.lines();
     }
 
     /**

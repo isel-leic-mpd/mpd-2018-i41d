@@ -4,12 +4,13 @@ import weather.dto.LocationDto;
 import weather.dto.WeatherInfoDto;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 public interface WeatherApi {
 
-    Iterable<LocationDto> search(String query);
+    Stream<LocationDto> search(String query);
 
-    Iterable<WeatherInfoDto> pastWeather(double lat,
+    Stream<WeatherInfoDto> pastWeather(double lat,
                                                 double log,
                                                 LocalDate from,
                                                 LocalDate to);

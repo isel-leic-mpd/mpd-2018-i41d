@@ -5,6 +5,7 @@ import weather.model.Location;
 import weather.model.WeatherInfo;
 
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.time.LocalDate.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,33 +17,33 @@ public class WeatherServiceTest {
         WeatherService weather = new WeatherService(new FileRequest());
 
         // search => map(filter(req.getConstent())))
-        Iterable<Location> locations = weather.search("Oporto");
-        Queries.forEach(locations, System.out::println);
+        Stream<Location> locations = weather.search("Oporto");
+        locations.forEach(System.out::println);
     }
 
     @Test
     public void testSearchAndPastWeather() {
-        Function<String, Iterable<String>> http = new HttpRequest()::getContent;
+        Function<String, Stream<String>> http = new HttpRequest()::getContent;
         Function<String, String> logger = arg -> {
             System.out.println("HTTP Get... " + arg);
             return arg;
         };
-        Function<String, Iterable<String>> req = logger.andThen(http);
+        Function<String, Stream<String>> req = logger.andThen(http);
         // <=> Function<String, Iterable<String>> req = http.thenBy(logger);
 
 
         // Function<String, Iterable<String>> logger =
         //        Loggify.of(http::getContent, "HTTP Get... ");
-        Countify.Counter<String, Iterable<String>> counter =
+        Countify.Counter<String, Stream<String>> counter =
                 Countify.of(req);
         WeatherService weather = new WeatherService(counter::apply);
         System.out.println("Get Faro Location...");
         Location faro = weather.search("Faro").iterator().next();
         assertEquals(1, counter.getCount());
         System.out.println("Get past weather for Faro...");
-        Iterable<WeatherInfo> past = faro.past30DaysWeather();
+        Stream<WeatherInfo> past = faro.past30DaysWeather();
         assertEquals(2, counter.getCount());
-        Queries.forEach(past, System.out::println);
+        past.forEach(System.out::println);
     }
     static class Logger implements IRequest {
         final String msg;
@@ -52,7 +53,7 @@ public class WeatherServiceTest {
             this.req = req;
         }
         @Override
-        public Iterable<String> getContent(String path) {
+        public Stream<String> getContent(String path) {
             System.out.println(msg);
             return req.getContent(path);
         }
@@ -68,7 +69,7 @@ public class WeatherServiceTest {
             return count;
         }
         @Override
-        public Iterable<String> getContent(String path) {
+        public Stream<String> getContent(String path) {
             count++;
             return req.getContent(path);
         }

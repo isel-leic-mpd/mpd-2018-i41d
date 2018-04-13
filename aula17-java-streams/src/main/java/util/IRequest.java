@@ -15,10 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package util;/**
+package util;
+
+import java.util.stream.Stream;
+
+/**
  * @author Miguel Gamboa
  *         created on 08-03-2017
  */
 public interface IRequest {
-    Iterable<String> getContent(String path);
+    Stream<String> getContent(String path);
 }

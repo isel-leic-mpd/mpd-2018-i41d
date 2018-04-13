@@ -1,13 +1,13 @@
 package weather;
 
 import util.IRequest;
-import util.Queries;
 import weather.dto.LocationDto;
 import weather.dto.WeatherInfoDto;
 import weather.model.Location;
 import weather.model.WeatherInfo;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 public class WeatherService {
 
@@ -21,19 +21,21 @@ public class WeatherService {
         this.api = api;
     }
 
-    private Iterable<WeatherInfo> pastWeather(
+    private Stream<WeatherInfo> pastWeather(
             double lat,
             double log,
             LocalDate from,
             LocalDate to
     ) {
-        Iterable<WeatherInfoDto> past = api.pastWeather(lat, log, from, to);
-        return Queries.map(past, WeatherService::dtoToWeatherInfo);
+        return api
+                .pastWeather(lat, log, from, to)
+                .map(WeatherService::dtoToWeatherInfo);
     }
 
-    public Iterable<Location> search(String query) {
-        Iterable<LocationDto> locals = api.search(query);
-        return Queries.map(locals, this::dtoToLocation);
+    public Stream<Location> search(String query) {
+        return api
+                .search(query)
+                .map(this::dtoToLocation);
     }
 
     private Location dtoToLocation(LocationDto dto) {

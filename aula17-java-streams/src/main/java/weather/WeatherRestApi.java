@@ -34,11 +34,9 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import static java.lang.Double.parseDouble;
-import static util.Queries.map;
-import static util.Queries.of;
-import static util.Queries.reduce;
 
 /**
  * @author Miguel Gamboa
@@ -82,16 +80,16 @@ public class WeatherRestApi implements WeatherApi {
      * E.g. http://api.worldweatheronline.com/premium/v1/search.ashx?query=oporto&format=json&key=*****
      */
 
-    public Iterable<LocationDto> search(String query) {
+    public Stream<LocationDto> search(String query) {
         String url=WEATHER_HOST + WEATHER_SEARCH + WEATHER_SEARCH_ARGS;
         url = String.format(url, query, WEATHER_TOKEN);
-        Iterable<String> src = req.getContent(url);
-        String json = reduce(src, "", (prev, curr) -> prev + curr);
+        String json = req
+                .getContent(url)
+                .reduce("", (prev, curr) -> prev + curr);
         SearchDto dto = gson.fromJson(json, SearchDto.class);
-
-        return map(
-                of(dto.getSearch_api().getResult()),
-                WeatherRestApi::parseLocationDto);
+        return Stream
+                    .of(dto.getSearch_api().getResult())
+                    .map(WeatherRestApi::parseLocationDto);
     }
 
     private static LocationDto parseLocationDto(SearchSearchApiResultDto dto) {
@@ -106,7 +104,7 @@ public class WeatherRestApi implements WeatherApi {
     /**
      * E.g. http://api.worldweatheronline.com/premium/v1/past-weather.ashx?q=41.15,-8.6167&date=2017-02-01&enddate=2017-04-30&tp=24&format=json&key=*********
      */
-    public Iterable<WeatherInfoDto> pastWeather(
+    public Stream<WeatherInfoDto> pastWeather(
             double lat,
             double log,
             LocalDate from,
@@ -115,12 +113,14 @@ public class WeatherRestApi implements WeatherApi {
         String query = lat + "," + log;
         String path = WEATHER_HOST + WEATHER_PAST +
                 String.format(WEATHER_PAST_ARGS, query, from, to, WEATHER_TOKEN);
-        Iterable<String> src = req.getContent(path);
-        String json = reduce(src, "", (prev, curr) -> prev + curr);
+
+        String json = req
+                    .getContent(path)
+                    .reduce("", (prev, curr) -> prev + curr);
         PastWeatherDto dto = gson.fromJson(json, PastWeatherDto.class);
-        return map(
-                of(dto.getData().getWeather()),
-                WeatherRestApi::parseWeatherInfoDto);
+        return Stream
+                .of(dto.getData().getWeather())
+                .map(WeatherRestApi::parseWeatherInfoDto);
     }
 
     private static WeatherInfoDto parseWeatherInfoDto(PastWeatherDataWeatherDto rest) {

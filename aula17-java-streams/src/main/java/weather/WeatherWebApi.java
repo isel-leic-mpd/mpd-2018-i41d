@@ -28,10 +28,7 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.time.LocalDate;
-
-import static util.Queries.filter;
-import static util.Queries.map;
-import static util.Queries.skip;
+import java.util.stream.Stream;
 
 /**
  * @author Miguel Gamboa
@@ -74,30 +71,19 @@ class WeatherWebApi implements WeatherApi {
      * E.g. http://api.worldweatheronline.com/premium/v1/search.ashx?query=oporto&format=tab&key=*****
      */
 
-    public Iterable<LocationDto> search(String query) {
+    public Stream<LocationDto> search(String query) {
         String url=WEATHER_HOST + WEATHER_SEARCH + WEATHER_SEARCH_ARGS;
         url = String.format(url, query, WEATHER_TOKEN);
-        return map(
-                filter(
-                        req.getContent(url),
-                        l -> !l.startsWith("#")),
-                LocationDto::valueOf);
-
-        /*
-        List<LocationDto> locations= new ArrayList<>();
-        Iterator<String> iteratorString= req.getContent(url).iterator();
-        while(iteratorString.hasNext()) {
-            String line = iteratorString.next();
-            if(!line.startsWith("#")) locations.add(LocationDto.valueOf(line));
-        }
-        return locations;
-        */
+        return req
+                .getContent(url)
+                .filter(l -> !l.startsWith("#"))
+                .map(LocationDto::valueOf);
     }
 
     /**
      * E.g. http://api.worldweatheronline.com/premium/v1/past-weather.ashx?q=41.15,-8.6167&date=2017-02-01&enddate=2017-04-30&tp=24&format=csv&key=*********
      */
-    public Iterable<WeatherInfoDto> pastWeather(
+    public Stream<WeatherInfoDto> pastWeather(
             double lat,
             double log,
             LocalDate from,
@@ -106,24 +92,12 @@ class WeatherWebApi implements WeatherApi {
         String query = lat + "," + log;
         String path = WEATHER_HOST + WEATHER_PAST +
                 String.format(WEATHER_PAST_ARGS, query, from, to, WEATHER_TOKEN);
-        Iterable<String> src = req.getContent(path);
         boolean [] isEven = {true};
-        return map(
-                filter(
-                    skip(
-                        filter(src, w -> !w.startsWith("#")), // Filter comments
-                        1),  // Skip line: Not Available
-                    l -> isEven[0] = !isEven[0]), // Filter Even lines
-                WeatherInfoDto::valueOf); // Map to WeatherInfoDto objects
-        /*
-        while(iter.next().startsWith("#")) { }
-        iter.next(); // Skip line: Not Available
-        while(iter.hasNext()) {
-            String line = iter.next(); // Skip Daily Info
-            res.add(WeatherInfoDto.valueOf(line));
-            if(iter.hasNext()) iter.next();
-        }
-        return res;
-        */
+        return req
+                .getContent(path)
+                .filter(w -> !w.startsWith("#")) // Filter comments
+                .skip(1)                         // Skip line: Not Available
+                .filter(l -> isEven[0] = !isEven[0]) // Filter Even lines
+                .map(WeatherInfoDto::valueOf);   // Map to WeatherInfoDto objects
     }
 }
