@@ -14,5 +14,6 @@ include 'aula11-compose-andThen-default-methods'
 include 'aula12-restful-json'
 include 'aula13-composition-default-methods'
 include 'aula17-java-streams'
+include 'aula18-spliterator'
 
 rootProject.name = 'mpd2018aulas'
