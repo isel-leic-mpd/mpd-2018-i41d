@@ -15,5 +15,6 @@ include 'aula12-restful-json'
 include 'aula13-composition-default-methods'
 include 'aula17-java-streams'
 include 'aula18-spliterator'
+include 'aula20-queryable'
 
 rootProject.name = 'mpd2018aulas'
