@@ -1,12 +1,17 @@
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import util.Cmp;
 import util.FileRequest;
+import util.Queries;
 import weather.WeatherService;
 import weather.model.WeatherInfo;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Spliterator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -16,8 +21,67 @@ import static java.util.stream.Stream.*;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static util.Queries.collapse;
 
 public class StreamsTest {
+
+    @Test
+    public void testCollapseIterables() {
+        Iterable<Integer> nrs = asList(7, 7, 11, 12, 7, 11, 11, 8, 8, 8);
+        Iterable<Integer> actual = collapse(nrs);
+        Iterable<Integer> expected = asList(7, 11, 12, 7, 11, 8);
+        assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void testCollapseStream() {
+        Stream<Integer> nrs = Stream.of(7, 7, 11, 12, 7, 11, 11, 8, 8, 8);
+        Iterable<Integer> actual = () -> collapse(nrs).iterator();
+        Iterable<Integer> expected = Arrays.asList(7, 11, 12, 7, 11, 8);
+        assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void testExternalIteration() {
+        WeatherService weather = new WeatherService(new FileRequest());
+        Stream<String> descs = weather
+                .search("Oporto")
+                .iterator()
+                .next()
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .map(WeatherInfo::getDescription)
+                .distinct();
+        StringBuilder res = new StringBuilder();
+        for(Iterator<String> iter = descs.iterator(); iter.hasNext(); ){
+            String item = iter.next(); // ASK for an item
+            res.append(item);
+            res.append(',');
+        }
+        System.out.println(res);
+        assertEquals(
+                "Moderate rain,Moderate or heavy rain shower,Patchy rain possible,Light drizzle,Partly cloudy,Overcast,Light rain shower,Sunny,Cloudy,Light rain,Patchy light rain with thunder,",
+                res.toString());
+    }
+
+    @Test
+    public void testInternalIteration() {
+        WeatherService weather = new WeatherService(new FileRequest());
+        Stream<String> descs = weather
+                .search("Oporto")
+                .iterator()
+                .next()
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .map(WeatherInfo::getDescription)
+                .distinct();
+        StringBuilder res = new StringBuilder();
+        Spliterator<String> iter = descs.spliterator();
+        while(iter.tryAdvance(item -> res.append(item + ","))) {}
+        System.out.println(res);
+        assertEquals(
+                "Moderate rain,Moderate or heavy rain shower,Patchy rain possible,Light drizzle,Partly cloudy,Overcast,Light rain shower,Sunny,Cloudy,Light rain,Patchy light rain with thunder,",
+                res.toString());
+    }
+
     @Test
     public void testSomeThing() {
         // WeatherWebApi weather = new WeatherWebApi(new HttpRequest());

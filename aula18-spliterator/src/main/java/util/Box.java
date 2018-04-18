@@ -4,8 +4,8 @@ package util;
  * <=> java.util.Optional
  */
 public class Box<T> {
-    private final boolean isPresent;
-    private final T item;
+    private boolean isPresent;
+    private T item;
 
     public Box(T item) {
         this.isPresent = true;
@@ -30,5 +30,10 @@ public class Box<T> {
 
     public T getItem() {
         return item;
+    }
+
+    public void set(T item) {
+        this.item = item;
+        isPresent = true;
     }
 }
