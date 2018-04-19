@@ -3,6 +3,7 @@ import org.junit.jupiter.api.Test;
 import util.Cmp;
 import util.FileRequest;
 import util.Queries;
+import util.Query;
 import weather.WeatherService;
 import weather.model.WeatherInfo;
 
@@ -24,6 +25,30 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static util.Queries.collapse;
 
 public class StreamsTest {
+
+
+
+    @Test
+    public void testQueryMapOfStream() {
+        String[] expected = {"1","2","4","7","7","4","32","2","23"};
+        Object[] actual = Query.of(
+                Stream.of(1,2,4,7,7,4,32,2,23))
+                .map(Object::toString)
+                .toArray();
+        assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void testQueryMapOfInifinte() {
+        String[] expected = {"7","8","9","10","11"};
+        int count[] = {7};
+        Object[] actual = Query
+                .generate(() -> count[0]++) // 7,8,9,...
+                .map(Object::toString)      // "7","8","9",...
+                .limit(5)                   // "7","8","9","10","11"
+                .toArray();// ["7","8","9","10","11"]
+        assertArrayEquals(expected, actual);
+    }
 
     @Test
     public void testCollapseIterables() {

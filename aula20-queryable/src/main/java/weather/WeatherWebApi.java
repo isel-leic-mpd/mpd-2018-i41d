@@ -18,6 +18,7 @@
 package weather;
 
 import util.IRequest;
+import util.Queries;
 import weather.dto.LocationDto;
 import weather.dto.WeatherInfoDto;
 
@@ -92,12 +93,11 @@ class WeatherWebApi implements WeatherApi {
         String query = lat + "," + log;
         String path = WEATHER_HOST + WEATHER_PAST +
                 String.format(WEATHER_PAST_ARGS, query, from, to, WEATHER_TOKEN);
-        boolean [] isEven = {true};
-        return req
-                .getContent(path)
-                .filter(w -> !w.startsWith("#")) // Filter comments
-                .skip(1)                         // Skip line: Not Available
-                .filter(l -> isEven[0] = !isEven[0]) // Filter Even lines
+        return Queries.oddLines(req
+                    .getContent(path)
+                    .filter(w -> !w.startsWith("#")) // Filter comments
+                    .skip(1)                         // Skip line: Not Available
+                )                                    // Filter Even lines
                 .map(WeatherInfoDto::valueOf);   // Map to WeatherInfoDto objects
     }
 }
