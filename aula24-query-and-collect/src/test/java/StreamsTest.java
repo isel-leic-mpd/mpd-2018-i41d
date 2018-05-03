@@ -8,14 +8,19 @@ import weather.WeatherService;
 import weather.model.WeatherInfo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Spliterator;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.lang.System.out;
 import static java.time.LocalDate.of;
 import static java.util.Arrays.asList;
 import static java.util.stream.Stream.*;
@@ -27,27 +32,43 @@ import static util.Queries.collapse;
 public class StreamsTest {
 
 
-
     @Test
-    public void testQueryMapOfStream() {
-        String[] expected = {"1","2","4","7","7","4","32","2","23"};
-        Object[] actual = Query.of(
-                Stream.of(1,2,4,7,7,4,32,2,23))
-                .map(Object::toString)
-                .toArray();
-        assertArrayEquals(expected, actual);
+    public void testCollectWithForEach() {
+        IntStream nrs = new Random().ints(1, 10).limit(7);
+        List<Integer> lst = new ArrayList<>();
+        nrs.forEach(lst::add); // !!! side-effects
+        System.out.println(lst);
     }
 
     @Test
-    public void testQueryMapOfInifinte() {
-        String[] expected = {"7","8","9","10","11"};
-        int count[] = {7};
-        Object[] actual = Query
-                .generate(() -> count[0]++) // 7,8,9,...
-                .map(Object::toString)      // "7","8","9",...
-                .limit(5)                   // "7","8","9","10","11"
-                .toArray();// ["7","8","9","10","11"]
-        assertArrayEquals(expected, actual);
+    public void testCollectWithReduce() {
+        Stream<Integer> nrs = new Random().ints(1, 10).limit(1000000).boxed();
+        List<Integer> lst = nrs.parallel().reduce(
+                new ArrayList<Integer>(),
+                (l, curr) -> {
+                    l.add(curr); // !!!! Mutação de estado => Inconsistencia
+                    return l;
+                }, // accumulator
+                (l1, l2) -> l1);// combiner => for parallel proposes
+        System.out.println(lst);
+        System.out.println(lst.size());
+    }
+
+    @Test
+    public void testCollectWithCollect() {
+        Stream<Integer> nrs = new Random().ints(1, 10).limit(1000000).boxed();
+        /*
+        List<Integer> lst = nrs.parallel().collect(
+                () -> new ArrayList<Integer>(),
+                (l, curr) -> l.add(curr), // accumulator
+                (l1, l2) -> l1.addAll(l2));// combiner => for parallel proposes
+        */
+        List<Integer> lst = nrs.parallel().collect(
+                ArrayList::new,
+                ArrayList::add,
+                ArrayList::addAll);
+        System.out.println(lst);
+        System.out.println(lst.size());
     }
 
     @Test
@@ -82,7 +103,7 @@ public class StreamsTest {
             res.append(item);
             res.append(',');
         }
-        System.out.println(res);
+        out.println(res);
         assertEquals(
                 "Moderate rain,Moderate or heavy rain shower,Patchy rain possible,Light drizzle,Partly cloudy,Overcast,Light rain shower,Sunny,Cloudy,Light rain,Patchy light rain with thunder,",
                 res.toString());
@@ -101,7 +122,7 @@ public class StreamsTest {
         StringBuilder res = new StringBuilder();
         Spliterator<String> iter = descs.spliterator();
         while(iter.tryAdvance(item -> res.append(item + ","))) {}
-        System.out.println(res);
+        out.println(res);
         assertEquals(
                 "Moderate rain,Moderate or heavy rain shower,Patchy rain possible,Light drizzle,Partly cloudy,Overcast,Light rain shower,Sunny,Cloudy,Light rain,Patchy light rain with thunder,",
                 res.toString());
@@ -122,7 +143,7 @@ public class StreamsTest {
         //
         // <=>  for (WeatherInfoDto w : past) { System.out.println(w); }
         // <=>
-        past.forEach(System.out::println);
+        past.forEach(out::println);
 
     }
 
@@ -130,7 +151,7 @@ public class StreamsTest {
     public void testGenerator() {
         generate(Math::random)
                 .limit(7)
-                .forEach(System.out::println);
+                .forEach(out::println);
     }
 
     @Test
@@ -160,11 +181,11 @@ public class StreamsTest {
                 .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
         Stream<Integer> temps = past
                 .filter(w -> {
-                    System.out.println("Filtering .... " + w);
+                    out.println("Filtering .... " + w);
                     return w.getDescription().contains("cloud");
                 })
                 .map(w -> {
-                    System.out.println("Mapping.... " + w.getTempC());
+                    out.println("Mapping.... " + w.getTempC());
                     return w.getTempC();
                 });
         Integer[] expected = {14, 15, 17, 25, 16, 19, 25, 24, 22, 18};

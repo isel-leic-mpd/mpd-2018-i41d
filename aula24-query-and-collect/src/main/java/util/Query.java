@@ -5,9 +5,14 @@ import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * Definition of a sequence based on a single method iteration:
+ * tryAdvance(Consumer<T>)
+ */
 public interface Query<T> {
 
     public boolean tryAdvance(Consumer<? super T> action);
@@ -35,6 +40,13 @@ public interface Query<T> {
 
     public default <R> Query<R> map(Function<T,R> mapper) {
         return cons -> this.tryAdvance(item -> cons.accept(mapper.apply(item)));
+    }
+
+    public default Query<T> filter(Predicate<T> pred) {
+        // !!!!! Implementação Errada !!!!!
+        return cons -> this.tryAdvance(item -> {
+            if (pred.test(item)) cons.accept(item);
+        });
     }
 
     public default Query<T> limit(int size) {
