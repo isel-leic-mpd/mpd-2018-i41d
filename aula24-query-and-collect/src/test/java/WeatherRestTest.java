@@ -24,7 +24,7 @@ public class WeatherRestTest {
     public void testPastWeatherDtos() {
         HttpRequest req = new HttpRequest();
         String json = req
-                        .getContent("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?q=37.017,-7.933&date=2018-02-19&enddate=2018-03-21&tp=24&format=json&key=715b185b36034a4c879141841182802")
+                        .getContent("http://api.worldweatheronline.com/premium/v1/past-weather.ashx?q=37.017,-7.933&date=2018-02-19&enddate=2018-03-21&tp=24&format=json&key=54a4f43fc39c435fa2c143536183004")
                         .reduce("", (prev, curr) -> prev + curr);
         Class<PastWeatherDto> dtoClass = PastWeatherDto.class;// <=> typeof(PastWeatherDto)
         Gson gson = new Gson();
