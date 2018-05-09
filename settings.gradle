@@ -18,5 +18,6 @@ include 'aula18-spliterator'
 include 'aula20-queryable'
 include 'aula24-query-and-collect'
 include 'aula25-query-and-collectors'
+include 'aula27-numeric-streams'
 
 rootProject.name = 'mpd2018aulas'
