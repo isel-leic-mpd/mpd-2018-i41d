@@ -62,10 +62,14 @@ public interface Query<T> {
     }
 
     public default Query<T> skip(int size) {
-        return cons -> { throw new UnsupportedOperationException(); };
+        int[] s = {size};
+        return cons -> {
+            while((s[0]--) > 0) tryAdvance((item)-> {});
+            return tryAdvance(cons);
+        };
     }
     public default Query<T> oddLines() {
-        return cons -> { throw new UnsupportedOperationException(); };
+        return cons -> tryAdvance((item) ->{}) && tryAdvance(cons);
     }
 
     public default Query<T> collapse() {

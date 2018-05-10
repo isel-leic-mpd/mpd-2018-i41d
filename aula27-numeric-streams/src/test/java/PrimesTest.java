@@ -6,6 +6,12 @@ public class PrimesTest {
 
     @Test
     public void testPrimes() {
+        for (int i = 0; i < 5; i++) {
+            System.out.println("############################");
+            // System.out.println(measurePerformance(() -> Primes.primes(10000).count()));
+            System.out.println(measurePerformance(() -> Primes.primes(10000, Primes::isPrimeOpt).count()));
+            System.out.println(measurePerformance(() -> Primes.primes(10000, Primes::isPrimeOpt2).count()));
+        }
     }
 
     /**

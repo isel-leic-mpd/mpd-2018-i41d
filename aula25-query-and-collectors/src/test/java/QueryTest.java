@@ -10,6 +10,38 @@ import java.util.stream.Stream;
 public class QueryTest {
 
     @Test
+    public void testTPCSkipIterator() {
+        Query<Integer> nrs = Query.of(1, 2, 3, 1, -2, 3).skip(1);
+        int []actual = {Integer.MIN_VALUE};
+        nrs.tryAdvance(item -> actual[0] = item);
+        assertEquals(2, actual[0]);
+    }
+
+    @Test
+    public void testTPCSkip() {
+        Query<Integer> nrs = Query.of(1, 2, 3, 1, -2, 3).skip(1);
+        assertArrayEquals(new Object[]{2, 3, 1, -2, 3},nrs.toArray());
+
+        Query<Integer> nrs1 = Query.of(1, 2, 3, 1, -2, 3).skip(0);
+        assertArrayEquals(new Object[]{1, 2, 3, 1, -2, 3},nrs1.toArray());
+
+        Query<Integer> nrs2 = Query.of(1, 2, 3, 1, -2, 3).skip(6);
+        assertArrayEquals(new Object[]{},nrs2.toArray());
+    }
+
+    @Test
+    public void testTPCOddLines() {
+        Query<Integer> nrs = Query.of(1, 2, 3, 1, -2, 3).oddLines();
+        assertArrayEquals(new Object[]{2, 1, 3},nrs.toArray());
+
+        Query<Integer> nrs1 = Query.of(1, 2).oddLines();
+        assertArrayEquals(new Object[]{2},nrs1.toArray());
+
+        Query<Integer> nrs2 = Query.of(1).oddLines();
+        assertArrayEquals(new Object[]{},nrs2.toArray());
+    }
+
+    @Test
     public void testTPCFilter() {
         Integer[] expected = {1, 2, 3, 1, -2, 3};
         Object[] actual = Query.of(15, 1, 2, 3, 4, 8, 23, 41, 1, -2, 50, 3)

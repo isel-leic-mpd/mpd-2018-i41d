@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FibonacciTest {
     @Test public void testFib() {
-
+        Fibonacci.generate().limit(20).forEach(nr -> out.print(nr + " "));
+        System.out.println();
+        Fibonacci.iterate().limit(20).forEach(nr -> out.print(nr + " "));
     }
 }

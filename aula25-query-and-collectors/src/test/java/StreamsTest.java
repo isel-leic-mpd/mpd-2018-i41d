@@ -1,9 +1,6 @@
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import util.Cmp;
 import util.FileRequest;
-import util.Queries;
-import util.Query;
 import weather.WeatherService;
 import weather.model.WeatherInfo;
 
@@ -12,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -21,7 +17,6 @@ import java.util.Spliterator;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -30,10 +25,7 @@ import java.util.stream.Stream;
 
 import static java.lang.System.out;
 import static java.time.LocalDate.of;
-import static java.util.Arrays.asList;
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Stream.*;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -208,7 +200,8 @@ public class StreamsTest {
 
     @Test
     public void testGenerator() {
-        generate(Math::random)
+        // DoubleStream.generate(Math::random) // MELHOR eficiencia => SEM boxing!!!
+        Stream.generate(Math::random)
                 .limit(7)
                 .forEach(out::println);
     }
