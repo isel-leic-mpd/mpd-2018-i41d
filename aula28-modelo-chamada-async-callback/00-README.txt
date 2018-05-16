@@ -1,0 +1,1 @@
+csc /r:Newtonsoft.Json.dll /r:System.Net.Http.dll App.cs
