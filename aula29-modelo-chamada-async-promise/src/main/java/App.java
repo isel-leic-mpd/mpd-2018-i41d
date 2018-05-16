@@ -99,23 +99,23 @@ public class App
         // Prepare Request
         //
         AsyncHttpClient asyncHttpClient = asyncHttpClient();
-        CompletableFuture<Response> whenResponse = asyncHttpClient
+        asyncHttpClient
             .prepareGet(path)
             .addHeader("X-Auth-Token", "f8ca52bbe7a7436b832e939ed704394f")
             .execute()
-            .toCompletableFuture();
-        //
-        // Parse Response
-        //
-        whenResponse
-            .thenApply(Response::getResponseBody)
-            .thenApply(App::fromJson)
-            .whenComplete((res, ex) -> closeAHC(asyncHttpClient))
-            .thenAccept(league ->
+            .toCompletableFuture()
+            .whenComplete((res, ex) -> {
+                //
+                // Parse Response
+                //
+                String content = res.getResponseBody();
+                closeAHC(asyncHttpClient);
+                
+                LeagueTable league = fromJson(content);
                 System.out.printf("> %s --- leader: %s\n", 
                     league.leagueCaption, 
-                    league.standing[0].teamName)
-            );
+                    league.standing[0].teamName);        
+            });
     }
     
     static LeagueTable fromJson(String content) {
