@@ -38,6 +38,7 @@ public class App
         getAsyncBad(446);
         getAsyncBad(457);
         
+        
         System.out.println("############ Async demo");
         getAsync(445);
         getAsync(446);
@@ -104,18 +105,13 @@ public class App
             .addHeader("X-Auth-Token", "f8ca52bbe7a7436b832e939ed704394f")
             .execute()
             .toCompletableFuture()
-            .whenComplete((res, ex) -> {
-                //
-                // Parse Response
-                //
-                String content = res.getResponseBody();
-                closeAHC(asyncHttpClient);
-                
-                LeagueTable league = fromJson(content);
+            .thenApply(Response::getResponseBody)
+            .whenComplete((res, ex) -> closeAHC(asyncHttpClient))
+            .thenApply(App::fromJson)
+            .thenAccept(league -> 
                 System.out.printf("> %s --- leader: %s\n", 
                     league.leagueCaption, 
-                    league.standing[0].teamName);        
-            });
+                    league.standing[0].teamName));
     }
     
     static LeagueTable fromJson(String content) {
