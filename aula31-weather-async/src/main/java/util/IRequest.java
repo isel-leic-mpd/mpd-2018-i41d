@@ -17,12 +17,12 @@
 
 package util;
 
-import java.util.stream.Stream;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Miguel Gamboa
  *         created on 08-03-2017
  */
 public interface IRequest {
-    Stream<String> getContent(String path);
+    CompletableFuture<String> getContent(String path);
 }

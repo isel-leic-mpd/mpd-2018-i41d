@@ -17,22 +17,43 @@
 
 package util;
 
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.Response;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Miguel Gamboa
  *         created on 08-03-2017
  */
-public class HttpRequest extends AbstractRequest{
+public class HttpRequest implements IRequest{
     @Override
-    public InputStream openStream(String path) {
-        try{
-            return new URL(path).openStream();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+    public CompletableFuture<String> getContent(String uri) {
+        AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient();
+        return asyncHttpClient
+                .prepareGet(uri)
+                .execute() // ASYNC => não bloqueante
+                .toCompletableFuture()                 // CF<Response>
+                .thenApply(Response::getResponseBody)  // CF<String>
+                .whenComplete((res, ex) -> closeAHC(asyncHttpClient)); // CF<String>
+                /* <=>
+                .thenApply(body -> {
+                    closeAHC(asyncHttpClient);
+                    return body;
+                }); // CF<String>
+                */
+    }
+
+    static void closeAHC(AsyncHttpClient client){
+        try {
+            client.close();
+        } catch(IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

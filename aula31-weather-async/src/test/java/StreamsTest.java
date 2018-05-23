@@ -143,9 +143,11 @@ public class StreamsTest {
         WeatherService weather = new WeatherService(new FileRequest());
         Stream<String> descs = weather
                 .search("Oporto")
+                .join()
                 .iterator()
                 .next()
                 .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join()
                 .map(WeatherInfo::getDescription)
                 .distinct();
         StringBuilder res = new StringBuilder();
@@ -165,9 +167,11 @@ public class StreamsTest {
         WeatherService weather = new WeatherService(new FileRequest());
         Stream<String> descs = weather
                 .search("Oporto")
+                .join()
                 .iterator()
                 .next()
                 .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join()
                 .map(WeatherInfo::getDescription)
                 .distinct();
         StringBuilder res = new StringBuilder();
@@ -185,9 +189,11 @@ public class StreamsTest {
         WeatherService weather = new WeatherService(new FileRequest());
         Stream<WeatherInfo> past = weather
                 .search("Oporto")
+                .join()
                 .iterator()
                 .next()
-                .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join();
 
         // for(Iterator<WeatherInfoDto> iter = past.iteratosr(); iter.hasNext(); )
         //     System.out.println(iter.next());
@@ -211,9 +217,11 @@ public class StreamsTest {
         WeatherService weather = new WeatherService(new FileRequest());
         WeatherInfo[] past = weather
                 .search("Oporto")
+                .join()
                 .iterator()
                 .next()
                 .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join()
                 .toArray(size -> new WeatherInfo[size]);
         assertEquals(31, Stream.of(past).filter(w -> w.getDescription().contains("Sunny")).count());
         assertEquals(37, Stream.of(past).filter(w -> w.getDescription().contains("rain")).count());
@@ -228,9 +236,11 @@ public class StreamsTest {
         WeatherService weather = new WeatherService(new FileRequest());
         Stream<WeatherInfo> past = weather
                 .search("Oporto")
+                .join()
                 .iterator()
                 .next()
-                .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join();
         Stream<Integer> temps = past
                 .filter(w -> {
                     out.println("Filtering .... " + w);
@@ -249,9 +259,11 @@ public class StreamsTest {
         WeatherService weather = new WeatherService(new FileRequest());
         Stream<WeatherInfo> past = weather
                 .search("Oporto")
+                .join()
                 .iterator()
                 .next()
-                .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join();
         int max = past
                 .filter(w -> w.getDescription().contains("cloud"))
                 .map(WeatherInfo::getTempC)
@@ -266,9 +278,11 @@ public class StreamsTest {
         WeatherService weather = new WeatherService(new FileRequest());
         WeatherInfo[] past = weather
                 .search("Oporto")
+                .join()
                 .iterator()
                 .next()
                 .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join()
                 .toArray(size -> new WeatherInfo[size]);
         Optional<WeatherInfo> max = Stream.of(past).max(
                 // <=> (prev, w) -> prev.getTempC() - w.getTempC()
@@ -290,9 +304,12 @@ public class StreamsTest {
         WeatherService weather = new WeatherService(new FileRequest());
         Stream<WeatherInfo> past = weather
                 .search("Oporto")
+                .join()
                 .iterator()
                 .next()
-                .pastWeather(of(2017, 2, 1), of(2017, 4, 30));
+                .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join();
+
         int size = past
                 .map(WeatherInfo::getTempC)
                 .reduce(0, (prev, w) -> ++prev);

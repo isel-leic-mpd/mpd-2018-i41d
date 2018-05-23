@@ -17,18 +17,28 @@
 
 package util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * @author Miguel Gamboa
  *         created on 08-03-2017
  */
-public class FileRequest extends AbstractRequest{
+public class FileRequest implements IRequest{
 
+    /**
+     * !!!! ALERTA ainda é BLOQUEANTE
+     */
     @Override
-    public InputStream openStream(String uri) {
+    public CompletableFuture<String> getContent(String uri) {
         String[] parts = uri.split("/");
         String path = parts[parts.length-1]
                 .replace('?', '-')
@@ -37,8 +47,12 @@ public class FileRequest extends AbstractRequest{
                 .replace(',', '-')
                 .substring(0,68);
         try{
-            System.out.println(path);
-            return ClassLoader.getSystemResource(path).openStream();
+            InputStream in = ClassLoader.getSystemResource(path).openStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String content = reader.lines().collect(joining("\n")); // BLOQUEADO
+            CompletableFuture<String> promise = new CompletableFuture<>();
+            promise.complete(content);
+            return promise;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

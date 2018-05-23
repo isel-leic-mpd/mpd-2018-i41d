@@ -18,6 +18,7 @@
 package weather.model;
 
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
@@ -30,15 +31,17 @@ public class Location {
     private final String region;
     private final double latitude;
     private final double longitude;
-    private final BiFunction<LocalDate, LocalDate, Stream<WeatherInfo>> pastWeather;
+    private final BiFunction<LocalDate, LocalDate, CompletableFuture<Stream<WeatherInfo>>> pastWeather;
+    private final CompletableFuture<Stream<WeatherInfo>> past30days;
 
-
-    public Location(String country, String region, double latitude, double longitude, BiFunction<LocalDate, LocalDate, Stream<WeatherInfo>> pastWeather) {
+    public Location(String country, String region, double latitude, double longitude, BiFunction<LocalDate, LocalDate, CompletableFuture<Stream<WeatherInfo>>> pastWeather) {
         this.country = country;
         this.region = region;
         this.latitude = latitude;
         this.longitude = longitude;
         this.pastWeather = pastWeather;
+        LocalDate now = LocalDate.now();
+        past30days = pastWeather.apply(now.minusDays(30), now);
     }
 
     public Location() {
@@ -47,6 +50,8 @@ public class Location {
         this.latitude = 0;
         this.longitude = 0;
         this.pastWeather = (from, to) -> { throw new UnsupportedOperationException(); };
+        LocalDate now = LocalDate.now();
+        past30days = pastWeather.apply(now.minusDays(30), now);
     }
 
     public String getCountry() {
@@ -65,13 +70,13 @@ public class Location {
         return longitude;
     }
 
-    public Stream<WeatherInfo> pastWeather(LocalDate from, LocalDate to) {
+    public CompletableFuture<Stream<WeatherInfo>> pastWeather(LocalDate from, LocalDate to) {
         return pastWeather.apply(from, to);
     }
 
-    public Stream<WeatherInfo> past30DaysWeather() {
-        LocalDate now = LocalDate.now();
-        return pastWeather.apply(now.minusDays(30), now);
+    public CompletableFuture<Stream<WeatherInfo>> past30DaysWeather() {
+        // FALTA invalidar o past30days passado 1 dia
+        return past30days;
     }
 
 

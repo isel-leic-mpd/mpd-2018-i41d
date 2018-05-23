@@ -10,6 +10,7 @@ repositories {
 
 dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
+    compile 'org.asynchttpclient:async-http-client:2.4.7'
 
     // Use JUnit test framework
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.1.0'

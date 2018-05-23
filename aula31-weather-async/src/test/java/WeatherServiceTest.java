@@ -8,6 +8,7 @@ import weather.model.WeatherInfo;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,7 +28,7 @@ public class WeatherServiceTest {
         WeatherService weather = new WeatherService(new FileRequest());
 
         // search => map(filter(req.getConstent())))
-        Stream<Location> locations = weather.search("Oporto");
+        Stream<Location> locations = weather.search("Oporto").join();
         locations.forEach(System.out::println);
     }
 
@@ -36,9 +37,11 @@ public class WeatherServiceTest {
         WeatherService weather = new WeatherService(new WeatherWebApi(new FileRequest()));
         Map<String, Long> oporto = weather
                 .search("Oporto")
+                .join()
                 .findFirst()
                 .get()
                 .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join()
                 .collect(groupingBy(WeatherInfo::getDescription, Collectors.counting()));
         oporto.forEach((desc, lst) -> System.out.println(desc + ": " + lst));
     }
@@ -49,9 +52,11 @@ public class WeatherServiceTest {
         DecimalFormat df = new DecimalFormat("#.##");
         Map<String, String> oporto = weather
                 .search("Oporto")
+                .join()
                 .findFirst()
                 .get()
                 .pastWeather(of(2017, 2, 1), of(2017, 4, 30))
+                .join()
                 .collect(groupingBy(
                         WeatherInfo::getDescription,
                         // mapping(WeatherInfo::getTempC, toList())));
@@ -61,25 +66,25 @@ public class WeatherServiceTest {
 
     @Test
     public void testSearchAndPastWeather() {
-        Function<String, Stream<String>> http = new HttpRequest()::getContent;
+        Function<String, CompletableFuture<String>> http = new HttpRequest()::getContent;
         Function<String, String> logger = arg -> {
             System.out.println("HTTP Get... " + arg);
             return arg;
         };
-        Function<String, Stream<String>> req = logger.andThen(http);
+        Function<String, CompletableFuture<String>> req = logger.andThen(http);
         // <=> Function<String, Iterable<String>> req = http.thenBy(logger);
 
 
         // Function<String, Iterable<String>> logger =
         //        Loggify.of(http::getContent, "HTTP Get... ");
-        Countify.Counter<String, Stream<String>> counter =
+        Countify.Counter<String, CompletableFuture<String>> counter =
                 Countify.of(req);
         WeatherService weather = new WeatherService(counter::apply);
         System.out.println("Get Faro Location...");
-        Location faro = weather.search("Faro").iterator().next();
+        Location faro = weather.search("Faro").join().iterator().next();
         assertEquals(1, counter.getCount());
         System.out.println("Get past weather for Faro...");
-        Stream<WeatherInfo> past = faro.past30DaysWeather();
+        Stream<WeatherInfo> past = faro.past30DaysWeather().join();
         assertEquals(2, counter.getCount());
         past.forEach(System.out::println);
     }
@@ -91,7 +96,7 @@ public class WeatherServiceTest {
             this.req = req;
         }
         @Override
-        public Stream<String> getContent(String path) {
+        public CompletableFuture<String> getContent(String path) {
             System.out.println(msg);
             return req.getContent(path);
         }
@@ -107,7 +112,7 @@ public class WeatherServiceTest {
             return count;
         }
         @Override
-        public Stream<String> getContent(String path) {
+        public CompletableFuture<String> getContent(String path) {
             count++;
             return req.getContent(path);
         }

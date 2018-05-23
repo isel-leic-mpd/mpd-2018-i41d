@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import static java.lang.Double.parseDouble;
@@ -81,16 +82,15 @@ public class WeatherRestApi implements WeatherApi {
      * E.g. http://api.worldweatheronline.com/premium/v1/search.ashx?query=oporto&format=json&key=*****
      */
 
-    public Stream<LocationDto> search(String query) {
+    public CompletableFuture<Stream<LocationDto>> search(String query) {
         String url=WEATHER_HOST + WEATHER_SEARCH + WEATHER_SEARCH_ARGS;
         url = String.format(url, query, WEATHER_TOKEN);
-        String json = req
+        return req
                 .getContent(url)
-                .reduce("", (prev, curr) -> prev + curr);
-        SearchDto dto = gson.fromJson(json, SearchDto.class);
-        return Stream
+                .thenApply(json -> gson.fromJson(json, SearchDto.class))
+                .thenApply(dto -> Stream
                     .of(dto.getSearch_api().getResult())
-                    .map(WeatherRestApi::parseLocationDto);
+                    .map(WeatherRestApi::parseLocationDto));
     }
 
     private static LocationDto parseLocationDto(SearchSearchApiResultDto dto) {
@@ -105,7 +105,7 @@ public class WeatherRestApi implements WeatherApi {
     /**
      * E.g. http://api.worldweatheronline.com/premium/v1/past-weather.ashx?q=41.15,-8.6167&date=2017-02-01&enddate=2017-04-30&tp=24&format=json&key=*********
      */
-    public Query<WeatherInfoDto> pastWeather(
+    public CompletableFuture<Query<WeatherInfoDto>> pastWeather(
             double lat,
             double log,
             LocalDate from,
@@ -115,13 +115,12 @@ public class WeatherRestApi implements WeatherApi {
         String path = WEATHER_HOST + WEATHER_PAST +
                 String.format(WEATHER_PAST_ARGS, query, from, to, WEATHER_TOKEN);
 
-        String json = req
+        return req
                     .getContent(path)
-                    .reduce("", (prev, curr) -> prev + curr);
-        PastWeatherDto dto = gson.fromJson(json, PastWeatherDto.class);
-        return Query
-                .of(dto.getData().getWeather())
-                .map(WeatherRestApi::parseWeatherInfoDto);
+                    .thenApply(json -> gson.fromJson(json, PastWeatherDto.class))
+                    .thenApply(dto -> Query
+                        .of(dto.getData().getWeather())
+                        .map(WeatherRestApi::parseWeatherInfoDto));
     }
 
     private static WeatherInfoDto parseWeatherInfoDto(PastWeatherDataWeatherDto rest) {

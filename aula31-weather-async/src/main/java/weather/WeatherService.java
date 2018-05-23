@@ -7,6 +7,7 @@ import weather.model.Location;
 import weather.model.WeatherInfo;
 
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 public class WeatherService {
@@ -21,7 +22,7 @@ public class WeatherService {
         this.api = api;
     }
 
-    private Stream<WeatherInfo> pastWeather(
+    private CompletableFuture<Stream<WeatherInfo>> pastWeather(
             double lat,
             double log,
             LocalDate from,
@@ -29,14 +30,15 @@ public class WeatherService {
     ) {
         return api
                 .pastWeather(lat, log, from, to)
-                .map(WeatherService::dtoToWeatherInfo)
-                .toStream();
+                .thenApply(past -> past
+                    .map(WeatherService::dtoToWeatherInfo)
+                    .toStream());
     }
 
-    public Stream<Location> search(String query) {
+    public CompletableFuture<Stream<Location>> search(String query) {
         return api
                 .search(query)
-                .map(this::dtoToLocation);
+                .thenApply(locals -> locals.map(this::dtoToLocation));
     }
 
     private Location dtoToLocation(LocationDto dto) {

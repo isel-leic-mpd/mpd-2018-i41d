@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
@@ -73,19 +74,21 @@ public class WeatherWebApi implements WeatherApi {
      * E.g. http://api.worldweatheronline.com/premium/v1/search.ashx?query=oporto&format=tab&key=*****
      */
 
-    public Stream<LocationDto> search(String query) {
+    public CompletableFuture<Stream<LocationDto>> search(String query) {
         String url=WEATHER_HOST + WEATHER_SEARCH + WEATHER_SEARCH_ARGS;
         url = String.format(url, query, WEATHER_TOKEN);
         return req
                 .getContent(url)
-                .filter(l -> !l.startsWith("#"))
-                .map(LocationDto::valueOf);
+                .thenApply(body -> Stream.of(body.split("\n")))
+                .thenApply(lines -> lines
+                        .filter(l -> !l.startsWith("#"))
+                        .map(LocationDto::valueOf));
     }
 
     /**
      * E.g. http://api.worldweatheronline.com/premium/v1/past-weather.ashx?q=41.15,-8.6167&date=2017-02-01&enddate=2017-04-30&tp=24&format=csv&key=*********
      */
-    public Query<WeatherInfoDto> pastWeather(
+    public CompletableFuture<Query<WeatherInfoDto>> pastWeather(
             double lat,
             double log,
             LocalDate from,
@@ -94,10 +97,13 @@ public class WeatherWebApi implements WeatherApi {
         String query = lat + "," + log;
         String path = WEATHER_HOST + WEATHER_PAST +
                 String.format(WEATHER_PAST_ARGS, query, from, to, WEATHER_TOKEN);
-        return Query.of(req .getContent(path))
+        return req
+                .getContent(path)
+                .thenApply(body -> Query.of(body.split("\n")))
+                .thenApply(lines -> lines
                     .filter(w -> !w.startsWith("#"))// Filter comments
                     .skip(1)                        // Skip line: Not Available
                     .oddLines()                     // Filter Even lines
-                    .map(WeatherInfoDto::valueOf);  // Map to WeatherInfoDto objects
+                    .map(WeatherInfoDto::valueOf));  // Map to WeatherInfoDto objects
     }
 }
