@@ -20,5 +20,6 @@ include 'aula24-query-and-collect'
 include 'aula25-query-and-collectors'
 include 'aula27-numeric-streams'
 include 'aula31-weather-async'
+include 'aula33-http-server-sync'
 
 rootProject.name = 'mpd2018aulas'

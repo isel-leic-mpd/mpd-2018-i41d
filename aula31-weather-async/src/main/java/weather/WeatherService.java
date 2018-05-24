@@ -22,7 +22,7 @@ public class WeatherService {
         this.api = api;
     }
 
-    private CompletableFuture<Stream<WeatherInfo>> pastWeather(
+    public CompletableFuture<Stream<WeatherInfo>> pastWeather(
             double lat,
             double log,
             LocalDate from,
