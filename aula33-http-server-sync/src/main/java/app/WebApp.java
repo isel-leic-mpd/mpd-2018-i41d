@@ -26,6 +26,9 @@ import weather.WeatherService;
 import weather.model.Location;
 import weather.model.WeatherInfo;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.regex.Pattern;
@@ -36,6 +39,7 @@ import static java.lang.Double.parseDouble;
 import static java.time.LocalDate.now;
 
 public class WebApp {
+    private final static Charset utf8 = Charset.forName("utf-8");
     public static void main(String[] args) throws Exception {
 
         ServletHolder holderHome = new ServletHolder("static-home", DefaultServlet.class);
@@ -48,22 +52,44 @@ public class WebApp {
                 new WeatherService(new WeatherRestApi(new HttpRequest()));
 
         new HttpServer(3000)
-                .addHandler("/search/city", "text/plain", req ->
-                        weather
+                .addHandler("/search/city", "text/plain", (req, resp) -> {
+                    weather
                             .search(req.getParameter("name"))
-                            .join()
-                            .map(Location::toString)
-                            .collect(Collectors.joining("\n"))
-                )
-                .addHandler("/weather/*", "text/plain", req -> {
+                            .thenAccept(strm -> {
+                                // !!!! ALerta Não funciona
+                                // => O Jetty já enviou a resposta 200 OK sem BODY
+                                String respBody = strm.map(Location::toString)
+                                        .collect(Collectors.joining("\n"));
+                                byte[] respBodyBytes = respBody.getBytes(utf8);
+                                resp.setStatus(200);
+                                resp.setContentLength(respBodyBytes.length);
+                                try(OutputStream os = resp.getOutputStream()) {
+                                    os.write(respBodyBytes);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
+                })
+                .addHandler("/weather/*", "text/plain", (req, resp) -> {
                     String[] parts = req.getPathInfo().split("/");
                     double lat = parseDouble(parts[1]);
                     double log = parseDouble(parts[2]);
-                    return weather
+                    weather
                             .pastWeather(lat, log, now().minusDays(30), now().minusDays(1))
-                            .join()
-                            .map(WeatherInfo::toString)
-                            .collect(Collectors.joining("\n"));
+                            .thenAccept(strm -> {
+                                // !!!! ALerta Não funciona
+                                // => O Jetty já enviou a resposta 200 OK sem BODY
+                                String respBody = strm.map(WeatherInfo::toString)
+                                        .collect(Collectors.joining("\n"));
+                                byte[] respBodyBytes = respBody.getBytes(utf8);
+                                resp.setStatus(200);
+                                resp.setContentLength(respBodyBytes.length);
+                                try(OutputStream os = resp.getOutputStream()) {
+                                    os.write(respBodyBytes);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
                 })
                 .addServletHolder("/public/*", holderHome)
                 .run();

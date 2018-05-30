@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -35,8 +36,8 @@ import java.util.function.Function;
  */
 public class HttpServer {
 
-    public interface HttpGetHandler extends Function<HttpServletRequest, String> {
-        String apply(HttpServletRequest req);
+    public interface HttpGetHandler extends BiConsumer<HttpServletRequest, HttpServletResponse> {
+        void accept(HttpServletRequest req, HttpServletResponse resp);
     }
 
     private final Server server;
@@ -81,15 +82,7 @@ public class HttpServer {
             resp.setContentType(String.format("%s; charset=%s",
                     contentType,
                     utf8.name()));
-
-            String respBody = handler.apply(req);
-            byte[] respBodyBytes = respBody.getBytes(utf8);
-            resp.setStatus(200);
-            resp.setContentLength(respBodyBytes.length);
-            try(OutputStream os = resp.getOutputStream()) {
-                os.write(respBodyBytes);
-                os.close();
-            }
+            handler.accept(req, resp);
         }
     }
 }
