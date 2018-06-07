@@ -28,12 +28,12 @@ public class DtoTeam {
         }
     }
 
-    public final DtoLinks _links;
-    public final String name;
-    public final String code;
-    public final String shortName;
-    public final String squadMarketValue;
-    public final String crestUrl;
+    private final DtoLinks _links;
+    private final String name;
+    private final String code;
+    private final String shortName;
+    private final String squadMarketValue;
+    private final String crestUrl;
 
     public DtoTeam(DtoLinks links, String name, String code, String shortName, String squadMarketValue, String crestUrl) {
         this._links = links;
@@ -53,5 +53,25 @@ public class DtoTeam {
                 ", squadMarketValue='" + squadMarketValue + '\'' +
                 ", crestUrl='" + crestUrl + '\'' +
                 '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public String getSquadMarketValue() {
+        return squadMarketValue;
+    }
+
+    public String getCrestUrl() {
+        return crestUrl;
     }
 }

@@ -1,0 +1,18 @@
+<div class="container">
+    <table class="table">
+        <tr>
+            <th>Year</th>
+            <th>Caption</th>
+        </tr>
+        {{#each leagues}}
+            <tr>
+                <td>{{year}}</td>
+                <td>
+                    <a href='leagues/{{id}}/table'>
+                        {{caption}}
+                    </a>
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+</div>

@@ -20,8 +20,8 @@ public class SoccerService {
                 .getLeagues() // CF<DtoLeague[]>
                 .thenApply(Stream::of) // CF<Stream<DtoLeague>>
                 .thenApply(strm -> strm.map(l -> api // CF<Stream<CF<String>>>
-                        .getLeagueTable(l.id)
-                        .thenApply(table -> table.standing[0].teamName)))
+                        .getLeagueTable(l.getId())
+                        .thenApply(table -> table.getStanding()[0].getTeamName())))
                 .thenApply(strm -> strm.collect(toList()).stream())
                 .thenApply(strm -> strm.map(CompletableFuture::join));// CF<Stream<String>>
     }

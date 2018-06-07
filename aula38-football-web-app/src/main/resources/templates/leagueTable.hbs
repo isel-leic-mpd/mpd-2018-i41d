@@ -1,0 +1,32 @@
+<html>
+    <body>
+        <div class="container">
+            <ul>
+                <li>{{leagueCaption}}</li>
+                <li>{{matchday}}</li>
+            </ul>
+
+            <table class="table">
+                    <tr>
+                        <th>Position</th>
+                        <th>Name</th>
+                        <th>Points</th>
+                    </tr>
+                    {{#each standing}}
+                        <tr>
+                            <td>{{position}}</td>
+                            <td>
+                                <a href='/teams/{{id}}'>
+                                    {{teamName}}
+                                </a>
+                            </td>
+                            <td>
+                                {{points}}
+                            </td>
+                        </tr>
+                    {{/each}}
+                </table>
+
+        </div>
+    </body>
+</html>

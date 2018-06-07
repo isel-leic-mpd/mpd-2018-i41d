@@ -29,15 +29,15 @@ public class DtoLeagueTableStanding {
     }
 
 
-    public final DtoLinks _links;
-    public final int position;
-    public final String teamName;
-    public final int playedGames;
-    public final int points;
-    public final int goals;
-    public final int wins;
-    public final int draws;
-    public final int losses;
+    private final DtoLinks _links;
+    private final int position;
+    private final String teamName;
+    private final int playedGames;
+    private final int points;
+    private final int goals;
+    private final int wins;
+    private final int draws;
+    private final int losses;
 
     public DtoLeagueTableStanding(
             DtoLinks links,
@@ -74,5 +74,42 @@ public class DtoLeagueTableStanding {
                 ", draws=" + draws +
                 ", losses=" + losses +
                 "}";
+    }
+
+    public String getId() {
+        String[] strs = _links.team.href.split("/");
+        return strs[strs.length - 1];
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public int getPlayedGames() {
+        return playedGames;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public int getGoals() {
+        return goals;
+    }
+
+    public int getWins() {
+        return wins;
+    }
+
+    public int getDraws() {
+        return draws;
+    }
+
+    public int getLosses() {
+        return losses;
     }
 }

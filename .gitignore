@@ -1,4 +1,5 @@
 .gradle
+.vertx
 build/
 
 # Ignore InteliJ metadata

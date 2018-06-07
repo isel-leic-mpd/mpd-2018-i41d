@@ -7,9 +7,14 @@ import java.util.Arrays;
  *         created on 23-05-2016
  */
 public class DtoLeagueTable {
-    public final DtoLeagueTableStanding[] standing;
 
-    public DtoLeagueTable(DtoLeagueTableStanding[] standing) {
+    private final String leagueCaption;
+    private final int matchday;
+    private final DtoLeagueTableStanding[] standing;
+
+    public DtoLeagueTable(String leagueCaption, int matchday, DtoLeagueTableStanding[] standing) {
+        this.leagueCaption = leagueCaption;
+        this.matchday = matchday;
         this.standing = standing;
     }
 
@@ -18,5 +23,17 @@ public class DtoLeagueTable {
         return "DtoLeagueTable{" +
                 "standing=" + Arrays.toString(standing) +
                 '}';
+    }
+
+    public String getLeagueCaption() {
+        return leagueCaption;
+    }
+
+    public int getMatchday() {
+        return matchday;
+    }
+
+    public DtoLeagueTableStanding[] getStanding() {
+        return standing;
     }
 }

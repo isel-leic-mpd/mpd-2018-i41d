@@ -7,15 +7,15 @@ import java.util.Date;
  *         created on 23-05-2016
  */
 public class DtoLeague {
-    public final int id;
-    public final String caption;
-    public final String league;
-    public final String year;
-    public final int currentMatchday;
-    public final int numberOfMatchdays;
-    public final int numberOfTeams;
-    public final int numberOfGames;
-    public final Date lastUpdated;
+    private final int id;
+    private final String caption;
+    private final String league;
+    private final String year;
+    private final int currentMatchday;
+    private final int numberOfMatchdays;
+    private final int numberOfTeams;
+    private final int numberOfGames;
+    private final Date lastUpdated;
 
     public DtoLeague(
             int id,

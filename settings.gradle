@@ -23,5 +23,6 @@ include 'aula31-weather-async'
 include 'aula33-http-server-sync'
 include 'aula34-http-server-Async'
 include 'aula35-football'
+include 'aula38-football-web-app'
 
 rootProject.name = 'mpd2018aulas'

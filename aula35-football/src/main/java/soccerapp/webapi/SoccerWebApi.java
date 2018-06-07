@@ -18,6 +18,7 @@ public class SoccerWebApi {
     private static final String HOST = "http://api.football-data.org/";
     private static final String PATH_LEAGUES = "/v1/soccerseasons";
     private static final String PATH_TABLE = "/v1/soccerseasons/%d/leagueTable";
+    private static final String PATH_TEAM = "/v1/teams/%s";
     private static final String API_TOKEN_VALUE = "PLACE HERE YOUR API KEY";
     private static final String API_TOKEN_KEY = "X-Auth-Token";
 
@@ -42,9 +43,10 @@ public class SoccerWebApi {
         return httpGet(HOST + path, DtoLeagueTable.class);
     }
 
-    public CompletableFuture<DtoTeam> getTeam(String path)
+    public CompletableFuture<DtoTeam> getTeam(String id)
     {
-        return httpGet(path, DtoTeam.class);
+        String path = String.format(PATH_TEAM, id);
+        return httpGet(HOST + path, DtoTeam.class);
     }
 
     public CompletableFuture<DtoPlayersList> getPlayers(String path)
