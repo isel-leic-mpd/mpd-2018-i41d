@@ -81,7 +81,12 @@ public class SoccerRouter {
         resp.putHeader("content-type", "text/html");
         soccer
                 .getLeagues()
-                .thenAccept(arr -> {
+                .whenComplete((arr, err) -> {
+                    if(err != null) {
+                        err.printStackTrace();
+                        ctx.fail(err);
+                        return;
+                    }
                     ctx.put("leagues", arr);
                     engine.render(ctx, "templates", "/leagues.hbs", view -> {
                         if(view.succeeded())
